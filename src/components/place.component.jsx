@@ -1,8 +1,14 @@
 import React, { useRef } from "react";
-import { StandaloneSearchBox, LoadScript } from "@react-google-maps/api";
+import { StandaloneSearchBox, useJsApiLoader } from "@react-google-maps/api";
 
+const libraries = ['places'];
 const PlaceComponent = () => {
     const inputRef = useRef();
+
+    const { isLoaded, loadError } = useJsApiLoader({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+        libraries
+    });
 
     const handlePlaceChanged = () => { 
         const [ place ] = inputRef.current.getPlaces();
@@ -14,18 +20,18 @@ const PlaceComponent = () => {
     }
 
     return (
-        <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_API_KEY} libraries={["places"]}>
-                <StandaloneSearchBox
-                    onLoad={ref => inputRef.current = ref}
-                    onPlacesChanged={handlePlaceChanged}
-                >
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter Location"
-                    />
-                </StandaloneSearchBox>
-        </LoadScript>
+        isLoaded
+        &&
+        <StandaloneSearchBox
+            onLoad={ref => inputRef.current = ref}
+            onPlacesChanged={handlePlaceChanged}
+        >
+            <input
+                type="text"
+                className="form-control"
+                placeholder="Enter Location"
+            />
+        </StandaloneSearchBox>
     );
 };
 
